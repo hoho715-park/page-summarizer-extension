@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+  <head>
+    <title>아이콘 생성기</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #333;
+      }
+      .icon-preview {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin: 20px 0;
+      }
+      .icon-box {
+        text-align: center;
+        background: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      .icon-box p {
+        margin: 10px 0 0;
+        color: #666;
+        font-size: 14px;
+      }
+      canvas {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      button {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+        margin: 5px;
+      }
+      button:hover {
+        opacity: 0.9;
+      }
+      .instructions {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+      }
+      .instructions ol {
+        padding-left: 20px;
+      }
+      .instructions li {
+        margin: 8px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Chrome 확장 프로그램 아이콘 생성기</h1>
+
+      <div class="icon-preview">
+        <div class="icon-box">
+          <canvas id="icon16" width="16" height="16"></canvas>
+          <p>16x16</p>
+          <button onclick="download('icon16', 16)">다운로드</button>
+        </div>
+        <div class="icon-box">
+          <canvas id="icon48" width="48" height="48"></canvas>
+          <p>48x48</p>
+          <button onclick="download('icon48', 48)">다운로드</button>
+        </div>
+        <div class="icon-box">
+          <canvas id="icon128" width="128" height="128"></canvas>
+          <p>128x128</p>
+          <button onclick="download('icon128', 128)">다운로드</button>
+        </div>
+      </div>
+
+      <button onclick="downloadAll()">모든 아이콘 다운로드</button>
+
+      <div class="instructions">
+        <h3>사용 방법:</h3>
+        <ol>
+          <li>위 버튼을 클릭하여 아이콘 파일들을 다운로드합니다</li>
+          <li>확장 프로그램 폴더에 <code>icons</code> 폴더를 생성합니다</li>
+          <li>다운로드한 파일들을 <code>icons</code> 폴더에 저장합니다</li>
+          <li>Chrome에서 확장 프로그램을 다시 로드합니다</li>
+        </ol>
+      </div>
+    </div>
+
+    <script>
+      function drawIcon(canvas, size) {
+        const ctx = canvas.getContext("2d");
+        const scale = size / 128;
+
+        // 그라데이션 배경
+        const gradient = ctx.createLinearGradient(0, 0, size, size);
+        gradient.addColorStop(0, "#667eea");
+        gradient.addColorStop(1, "#764ba2");
+
+        // 둥근 사각형 배경
+        const radius = 24 * scale;
+        ctx.beginPath();
+        ctx.roundRect(0, 0, size, size, radius);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // 텍스트 라인들 (문서 아이콘 형태)
+        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+
+        const lines = [
+          { y: 36, width: 64 },
+          { y: 52, width: 56 },
+          { y: 68, width: 48 },
+          { y: 84, width: 40 },
+        ];
+
+        lines.forEach((line) => {
+          ctx.fillRect(
+            32 * scale,
+            line.y * scale,
+            line.width * scale,
+            8 * scale,
+          );
+        });
+
+        // 플러스 버튼 원
+        ctx.beginPath();
+        ctx.arc(96 * scale, 88 * scale, 20 * scale, 0, Math.PI * 2);
+        ctx.fillStyle = "white";
+        ctx.fill();
+
+        // 플러스 기호
+        ctx.strokeStyle = "#764ba2";
+        ctx.lineWidth = 4 * scale;
+        ctx.lineCap = "round";
+
+        ctx.beginPath();
+        ctx.moveTo(96 * scale, 76 * scale);
+        ctx.lineTo(96 * scale, 100 * scale);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(84 * scale, 88 * scale);
+        ctx.lineTo(108 * scale, 88 * scale);
+        ctx.stroke();
+      }
+
+      function download(canvasId, size) {
+        const canvas = document.getElementById(canvasId);
+        const link = document.createElement("a");
+        link.download = `icon${size}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      }
+
+      function downloadAll() {
+        download("icon16", 16);
+        setTimeout(() => download("icon48", 48), 100);
+        setTimeout(() => download("icon128", 128), 200);
+      }
+
+      // 초기화
+      drawIcon(document.getElementById("icon16"), 16);
+      drawIcon(document.getElementById("icon48"), 48);
+      drawIcon(document.getElementById("icon128"), 128);
+    </script>
+  </body>
+</html>
